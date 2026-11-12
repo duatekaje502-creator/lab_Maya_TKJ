@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Maya - Logika Kondisional (IF-ELSE)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter & Fira Code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          },
+          colors: {
+            darkbg: '#0F172A',
+            panelbg: '#1E293B',
+            cardbg: '#0F172A',
+            codebg: '#0B0F19',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0F172A;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    /* Pulse animation for active node */
+    @keyframes codeHighlight {
+      0%, 100% { background-color: rgba(59, 130, 246, 0.1); }
+      50% { background-color: rgba(59, 130, 246, 0.25); }
+    }
+    .code-active {
+      animation: codeHighlight 1.5s infinite;
+      border-left: 3px solid #3B82F6;
+    }
+
+    /* Range slider custom styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: #334155;
+      border-radius: 8px;
+      height: 8px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #38BDF8;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+    }
+  </style>
+</head>
+<body class="bg-darkbg text-slate-200 font-sans min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-slate-900">
+
+  <!-- ================= TOP NAVIGATION HEADER ================= -->
+  <header class="bg-panelbg/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-40 px-4 py-3">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Brand Logo & Title -->
+      <div class="flex items-center gap-3">
+        <div class="bg-gradient-to-tr from-cyan-500 to-blue-600 p-2.5 rounded-xl shadow-lg shadow-cyan-500/20 text-white">
+          <i class="fa-solid font-bold fa-laptop-code text-xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-lg text-white tracking-wide">Lab Maya</h1>
+            <span class="text-xs bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-semibold px-2 py-0.5 rounded-full">v2.4 Interactive</span>
+          </div>
+          <p class="text-xs text-slate-400">Modul 04: Logika Kondisional (IF-ELSE)</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center gap-1 sm:gap-2 bg-slate-900/60 p-1 rounded-xl border border-slate-800 text-xs sm:text-sm font-medium">
+        <button onclick="openModal('theoryModal')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition flex items-center gap-2">
+          <i class="fa-solid fa-book-bookmark text-cyan-400"></i>
+          <span>Teori Percabangan</span>
+        </button>
+        <button onclick="openModal('instructionModal')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition flex items-center gap-2">
+          <i class="fa-solid fa-clipboard-list text-amber-400"></i>
+          <span>Instruksi Lab</span>
+        </button>
+        <button class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-semibold shadow-md shadow-blue-500/20 flex items-center gap-2">
+          <i class="fa-solid fa-microchip"></i>
+          <span>Simulasi Logika</span>
+        </button>
+        <button onclick="openModal('lkpdModal')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square text-emerald-400"></i>
+          <span>LKPD</span>
+        </button>
+      </nav>
+
+      <!-- System Quick Action -->
+      <div class="hidden lg:flex items-center gap-3">
+        <button onclick="toggleAudioFeedback()" id="audioToggleBtn" class="p-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-300 hover:text-white transition" title="Toggle Sound Feedback">
+          <i class="fa-solid fa-volume-high text-cyan-400"></i>
+        </button>
+        <a href="https://labmaya.id" target="_blank" class="text-xs text-slate-400 hover:text-cyan-400 flex items-center gap-1 transition">
+          <span>LabMaya.id</span>
+          <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= MAIN 3-COLUMN CONTENT LAYOUT ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-5">
+    
+    <!-- ---------------- PANEL 1: LOGIC EDITOR (PSEUDOCODE) (4 Cols) ---------------- -->
+    <section class="lg:col-span-4 bg-panelbg border border-slate-700/60 rounded-2xl flex flex-col overflow-hidden shadow-xl">
+      <!-- Editor Header -->
+      <div class="bg-slate-900/80 px-4 py-3 border-b border-slate-700/60 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="flex gap-1.5">
+            <span class="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+          </div>
+          <span class="font-mono text-xs font-semibold text-slate-300 ml-2">LOGIC EDITOR (PSEUDOCODE)</span>
+        </div>
+        <button onclick="resetThresholds()" class="text-xs text-slate-400 hover:text-cyan-400 transition flex items-center gap-1">
+          <i class="fa-solid fa-rotate-left text-[10px]"></i> Reset
+        </button>
+      </div>
+
+      <!-- Code Instructions / Info -->
+      <div class="p-3 bg-slate-800/40 border-b border-slate-700/40 text-xs text-slate-400 leading-relaxed">
+        Ubah nilai batas (<i class="text-slate-300">Threshold</i>) pada input bernomor di bawah ini. Komputer akan mengeksekusi blok kode secara berurutan dari atas ke bawah.
+      </div>
+
+      <!-- Monospace Code Box -->
+      <div class="flex-1 bg-codebg p-4 font-mono text-xs sm:text-sm leading-relaxed text-slate-300 overflow-y-auto space-y-3 relative">
+        
+        <!-- Variable Initialization -->
+        <div class="text-slate-500">// 1. Inisialisasi variabel awal</div>
+        <div class="pl-2 border-l-2 border-slate-800">
+          <span class="text-purple-400">let</span> <span class="text-cyan-300">statusTangan</span> = <span class="text-emerald-300">"Menunggu Kamera"</span>;
+        </div>
+        <div class="pl-2 border-l-2 border-slate-800">
+          <span class="text-purple-400">let</span> <span class="text-cyan-300">jarak</span> = <span class="text-blue-400">deteksiJarakRealtime()</span>; <span class="text-slate-500 text-[11px]">// piksel</span>
+        </div>
+
+        <!-- Conditional Logic Block 1: IF -->
+        <div id="codeBlockIf" class="p-2.5 rounded-lg transition-all duration-300 border border-transparent">
+          <div class="flex items-center flex-wrap gap-1 text-slate-200 font-semibold">
+            <span class="text-rose-400 font-bold">if</span> ( <span class="text-cyan-300">jarak</span> &lt; 
+            <input type="number" id="thresh1" value="150" min="50" max="600" step="10" 
+                   oninput="validateAndEvaluate()" 
+                   class="w-16 bg-slate-800 border border-rose-500/50 rounded text-center text-rose-300 px-1 py-0.5 focus:outline-none focus:ring-2 focus:ring-rose-500 font-bold">
+            ) {
+          </div>
+          <div class="pl-4 border-l-2 border-rose-500/40 my-1 space-y-1">
+            <div class="text-slate-500 text-[11px]">// Kondisi Tangan Terlalu Dekat</div>
+            <div>
+              <span class="text-cyan-300">statusTangan</span> = <span class="text-emerald-300">"TERLALU DEKAT"</span>;
+            </div>
+            <div>
+              <span class="text-yellow-300">renderVisual</span>(<span class="text-emerald-300">"Peringatan Merah"</span>);
+            </div>
+          </div>
+          <div class="text-slate-200 font-semibold">}</div>
+        </div>
+
+        <!-- Conditional Logic Block 2: ELSE IF -->
+        <div id="codeBlockElseIf" class="p-2.5 rounded-lg transition-all duration-300 border border-transparent">
+          <div class="flex items-center flex-wrap gap-1 text-slate-200 font-semibold">
+            <span class="text-rose-400 font-bold">else if</span> ( <span class="text-cyan-300">jarak</span> &lt; 
+            <input type="number" id="thresh2" value="350" min="100" max="800" step="10" 
+                   oninput="validateAndEvaluate()" 
+                   class="w-16 bg-slate-800 border border-emerald-500/50 rounded text-center text-emerald-300 px-1 py-0.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold">
+            ) {
+          </div>
+          <div class="pl-4 border-l-2 border-emerald-500/40 my-1 space-y-1">
+            <div class="text-slate-500 text-[11px]">// Kondisi Jarak Optimal</div>
+            <div>
+              <span class="text-cyan-300">statusTangan</span> = <span class="text-emerald-300">"JARAK AMAN"</span>;
+            </div>
+            <div>
+              <span class="text-yellow-300">renderVisual</span>(<span class="text-emerald-300">"Kondisi Normal"</span>);
+            </div>
+          </div>
+          <div class="text-slate-200 font-semibold">}</div>
+        </div>
+
+        <!-- Conditional Logic Block 3: ELSE -->
+        <div id="codeBlockElse" class="p-2.5 rounded-lg transition-all duration-300 border border-transparent">
+          <div class="text-slate-200 font-semibold">
+            <span class="text-rose-400 font-bold">else</span> {
+          </div>
+          <div class="pl-4 border-l-2 border-amber-500/40 my-1 space-y-1">
+            <div class="text-slate-500 text-[11px]">// Kondisi Jarak Terlalu Jauh</div>
+            <div>
+              <span class="text-cyan-300">statusTangan</span> = <span class="text-emerald-300">"TERLALU JAUH"</span>;
+            </div>
+            <div>
+              <span class="text-yellow-300">renderVisual</span>(<span class="text-emerald-300">"Peringatan Kuning"</span>);
+            </div>
+          </div>
+          <div class="text-slate-200 font-semibold">}</div>
+        </div>
+
+      </div>
+
+      <!-- Logic Flow Diagram Helper -->
+      <div class="p-3 bg-slate-900 border-t border-slate-700/60 flex items-center justify-between text-xs">
+        <span class="text-slate-400">Eksekusi Logika:</span>
+        <div class="flex items-center gap-1 text-[11px]">
+          <span id="badgeStepIf" class="px-2 py-0.5 rounded bg-slate-800 text-slate-500 transition">IF</span>
+          <i class="fa-solid fa-angle-right text-slate-600"></i>
+          <span id="badgeStepElseIf" class="px-2 py-0.5 rounded bg-slate-800 text-slate-500 transition">ELSE IF</span>
+          <i class="fa-solid fa-angle-right text-slate-600"></i>
+          <span id="badgeStepElse" class="px-2 py-0.5 rounded bg-slate-800 text-slate-500 transition">ELSE</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------- PANEL 2: LIVE CAMERA FEED / SIMULATOR (5 Cols) ---------------- -->
+    <section class="lg:col-span-5 bg-panelbg border border-slate-700/60 rounded-2xl flex flex-col overflow-hidden shadow-xl">
+      <!-- Camera Header -->
+      <div class="bg-slate-900/80 px-4 py-3 border-b border-slate-700/60 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-video text-cyan-400 text-sm"></i>
+          <span class="font-mono text-xs font-semibold text-slate-300">LIVE DETECTOR FEED</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="camStatusDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+          <span id="camStatusText" class="text-xs text-amber-400 font-medium">Memuat Kamera...</span>
+        </div>
+      </div>
+
+      <!-- Camera Feed Viewport Area -->
+      <div class="relative flex-1 bg-black min-h-[300px] flex items-center justify-center overflow-hidden group">
+        
+        <!-- HTML5 Video Stream -->
+        <video id="webcam" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100 hidden"></video>
+
+        <!-- Canvas Visual Overlay for Bounding Box / Mesh -->
+        <canvas id="overlayCanvas" class="absolute inset-0 w-full h-full pointer-events-none transform -scale-x-100"></canvas>
+
+        <!-- Fallback View / Simulated Target Box when Camera disabled -->
+        <div id="simulatedObjectContainer" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+          <!-- Bounding box animation -->
+          <div id="targetBox" class="w-48 h-48 border-2 border-dashed border-cyan-400 rounded-2xl flex flex-col items-center justify-center bg-cyan-500/10 transition-all duration-200 shadow-[0_0_20px_rgba(56,189,248,0.2)]">
+            <i id="targetIcon" class="fa-solid fa-hand text-4xl text-cyan-400 mb-2 transition-transform duration-200"></i>
+            <span id="targetLabel" class="text-xs font-mono font-semibold text-cyan-300 bg-slate-900/80 px-2 py-0.5 rounded">Deteksi Tangan</span>
+          </div>
+        </div>
+
+        <!-- Live Visual Overlay Status Warning (Color Tint) -->
+        <div id="colorTintOverlay" class="absolute inset-0 pointer-events-none transition-colors duration-300 bg-transparent"></div>
+
+        <!-- Camera Control Bar Overlay -->
+        <div class="absolute bottom-3 left-3 right-3 bg-slate-900/90 backdrop-blur border border-slate-700/80 rounded-xl p-2.5 flex items-center justify-between gap-2 shadow-lg">
+          <button onclick="toggleWebcam()" id="btnToggleCam" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-medium transition flex items-center gap-1.5">
+            <i class="fa-solid fa-camera"></i>
+            <span id="btnCamText">Aktifkan Kamera</span>
+          </button>
+          
+          <div class="flex items-center gap-2">
+            <button onclick="toggleSimMode()" id="btnSimMode" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 text-xs font-medium transition flex items-center gap-1.5">
+              <i class="fa-solid fa-sliders text-amber-400"></i>
+              <span>Mode Slider</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manual Slider Controller Section -->
+      <div id="sliderControllerArea" class="p-4 bg-slate-900/90 border-t border-slate-700/60 space-y-3">
+        <div class="flex items-center justify-between text-xs">
+          <label for="distanceSlider" class="font-medium text-slate-300 flex items-center gap-2">
+            <i class="fa-solid fa-ruler-horizontal text-cyan-400"></i>
+            <span>Simulasi Jarak Manual (Piksel):</span>
+          </label>
+          <span id="sliderValueDisplay" class="font-mono text-cyan-400 font-bold bg-slate-800 px-2 py-0.5 rounded border border-slate-700">220 px</span>
+        </div>
+        <input type="range" id="distanceSlider" min="50" max="600" value="220" step="5" class="w-full cursor-pointer" oninput="onSliderMove(this.value)">
+        <div class="flex justify-between text-[10px] text-slate-500 font-mono px-1">
+          <span>50 px (Dekat)</span>
+          <span>300 px (Sedang)</span>
+          <span>600 px (Jauh)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------- PANEL 3: VARIABLE MONITOR & OUTPUT STATUS (3 Cols) ---------------- -->
+    <section class="lg:col-span-3 space-y-5 flex flex-col justify-between">
+      
+      <!-- Top Card: Live Variable Monitor -->
+      <div class="bg-panelbg border border-slate-700/60 rounded-2xl p-4 shadow-xl space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-chart-line text-purple-400 text-sm"></i>
+            <span class="font-mono text-xs font-semibold text-slate-300">VARIABLE MONITOR</span>
+          </div>
+          <span class="inline-flex items-center gap-1.5 text-[10px] bg-purple-500/10 text-purple-400 border border-purple-500/30 px-2 py-0.5 rounded-full font-semibold">
+            <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping"></span> Live Data
+          </span>
+        </div>
+
+        <!-- Variable 1: jumlahTangan -->
+        <div class="bg-cardbg border border-slate-800 rounded-xl p-3 flex items-center justify-between">
+          <div>
+            <div class="text-[11px] text-slate-400 font-mono">var <span class="text-purple-300 font-semibold">jumlahTangan</span></div>
+            <div class="text-xs text-slate-500">Jumlah objek terdeteksi</div>
+          </div>
+          <div id="varHandCount" class="font-mono font-bold text-lg text-emerald-400 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700">
+            1
+          </div>
+        </div>
+
+        <!-- Variable 2: jarak -->
+        <div class="bg-cardbg border border-slate-800 rounded-xl p-3 flex items-center justify-between">
+          <div>
+            <div class="text-[11px] text-slate-400 font-mono">var <span class="text-cyan-300 font-semibold">jarak</span></div>
+            <div class="text-xs text-slate-500">Selisih piksel (T1 - T2)</div>
+          </div>
+          <div id="varDistanceValue" class="font-mono font-bold text-lg text-cyan-400 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700">
+            220 <span class="text-xs text-slate-500 font-normal">px</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Middle Card: Output Status Indicator -->
+      <div class="bg-panelbg border border-slate-700/60 rounded-2xl p-4 shadow-xl flex-1 flex flex-col justify-between space-y-4">
+        <div>
+          <div class="flex items-center justify-between border-b border-slate-700/60 pb-3 mb-4">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-bullhorn text-amber-400 text-sm"></i>
+              <span class="font-mono text-xs font-semibold text-slate-300">OUTPUT STATUS</span>
+            </div>
+          </div>
+
+          <!-- Large Dynamic Status Badge -->
+          <div id="outputBadgeContainer" class="p-5 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col items-center justify-center text-center transition-all duration-300 min-h-[140px]">
+            <i id="outputIcon" class="fa-solid fa-spinner fa-spin text-3xl text-slate-500 mb-2"></i>
+            <h3 id="outputStatusTitle" class="font-mono text-base font-bold text-slate-300 tracking-wide uppercase">
+              MENUNGGU OBJEK...
+            </h3>
+            <p id="outputSubtext" class="text-xs text-slate-400 mt-1">
+              Arahkan tangan ke depan kamera
+            </p>
+          </div>
+        </div>
+
+        <!-- Interactive Explanation Box -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-3 text-xs space-y-2">
+          <div class="flex items-center gap-1.5 text-cyan-400 font-semibold">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Catatan Evaluasi:</span>
+          </div>
+          <p id="evaluationExplanation" class="text-slate-400 leading-relaxed text-[11px]">
+            Program berjalan dari <strong class="text-slate-200">atas ke bawah</strong>. Saat kondisi IF pertama bernilai <strong class="text-emerald-400">True</strong>, percabangan di bawahnya akan diabaikan.
+          </p>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="bg-slate-900 border-t border-slate-800 py-3 px-4 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div>&copy; 2026 <strong>Lab Maya Interactive Platform</strong>. Media Pembelajaran Logika Informatika.</div>
+      <div class="flex items-center gap-4 text-slate-400">
+        <span class="flex items-center gap-1"><i class="fa-solid fa-code text-cyan-400"></i> Pure HTML5 & JS</span>
+        <span class="flex items-center gap-1"><i class="fa-solid fa-shield-halved text-emerald-400"></i> Privacy Safe</span>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ================= MODAL DIALOGS ================= -->
+
+  <!-- Modal 1: Teori Percabangan -->
+  <div id="theoryModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-panelbg border border-slate-700 rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
+      <button onclick="closeModal('theoryModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="flex items-center gap-3 border-b border-slate-700 pb-3">
+        <i class="fa-solid fa-book-bookmark text-cyan-400 text-xl"></i>
+        <h2 class="text-lg font-bold text-white">Teori Dasar Percabangan (IF - ELSE IF - ELSE)</h2>
+      </div>
+      <div class="space-y-3 text-xs sm:text-sm text-slate-300 leading-relaxed">
+        <p>
+          Dalam struktur pemrograman komputer, <strong>Logika Kondisional (Percabangan)</strong> memungkinkan program mengambil keputusan berdasarkan kriteria tertentu.
+        </p>
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 font-mono text-xs text-cyan-300">
+          if (kondisi_A) {<br>
+          &nbsp;&nbsp;// Dijalankan jika kondisi_A BENAR (True)<br>
+          } else if (kondisi_B) {<br>
+          &nbsp;&nbsp;// Dijalankan jika kondisi_A SALAH dan kondisi_B BENAR<br>
+          } else {<br>
+          &nbsp;&nbsp;// Dijalankan jika SEMUA kondisi di atas SALAH<br>
+          }
+        </div>
+        <p>
+          <strong>Prinsip Penting:</strong> Urutan evaluasi dimulai dari paling atas. Ketika sebuah kondisi bernilai <code class="text-emerald-400 font-mono">True</code>, kode di dalam blok tersebut akan dieksekusi, dan sistem langsung keluar dari seluruh struktur IF-ELSE.
+        </p>
+      </div>
+      <div class="pt-3 border-t border-slate-700 text-right">
+        <button onclick="closeModal('theoryModal')" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-semibold">Paham, Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Instruksi Lab -->
+  <div id="instructionModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-panelbg border border-slate-700 rounded-2xl max-w-xl w-full p-6 shadow-2xl relative space-y-4">
+      <button onclick="closeModal('instructionModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="flex items-center gap-3 border-b border-slate-700 pb-3">
+        <i class="fa-solid fa-clipboard-list text-amber-400 text-xl"></i>
+        <h2 class="text-lg font-bold text-white">Langkah Praktikum Simulasi</h2>
+      </div>
+      <ol class="list-decimal list-inside space-y-2 text-xs sm:text-sm text-slate-300">
+        <li>Klik tombol <strong>"Aktifkan Kamera"</strong> untuk mengizinkan webcam atau gunakan <strong>"Mode Slider"</strong> untuk simulasi manual.</li>
+        <li>Amati perubahan nilai <code class="text-cyan-300 font-mono">var jarak</code> saat Anda mendekatkan atau menjauhkan tangan dari kamera/slider.</li>
+        <li>Perhatikan sorotan warna pada <strong>Logic Editor (Panel Kiri)</strong> saat kondisi IF, ELSE IF, atau ELSE terpenuhi.</li>
+        <li>Coba ubah angka pada kotak input <strong>Threshold (150 dan 350)</strong> untuk mengubah batas keputusan program secara langsung.</li>
+      </ol>
+      <div class="pt-3 border-t border-slate-700 text-right">
+        <button onclick="closeModal('instructionModal')" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold">Mulai Praktikum</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: LKPD (Lembar Kerja Peserta Didik) -->
+  <div id="lkpdModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-panelbg border border-slate-700 rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
+      <button onclick="closeModal('lkpdModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="flex items-center gap-3 border-b border-slate-700 pb-3">
+        <i class="fa-solid fa-pen-to-square text-emerald-400 text-xl"></i>
+        <h2 class="text-lg font-bold text-white">Lembar Kerja Peserta Didik (LKPD)</h2>
+      </div>
+      
+      <div class="space-y-4 text-xs sm:text-sm">
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-2">
+          <label class="font-semibold text-slate-200">Soal 1: Analisis Threshold</label>
+          <p class="text-slate-400 text-xs">Jika threshold IF diubah dari 150 menjadi 250, dan nilai jarak yang terdeteksi adalah 200, status apakah yang akan muncul di Output Status?</p>
+          <input type="text" placeholder="Ketik jawaban kamu di sini..." class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500">
+        </div>
+
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-2">
+          <label class="font-semibold text-slate-200">Soal 2: Kesimpulan Logika</label>
+          <p class="text-slate-400 text-xs">Mengapa kondisi 'ELSE IF' tidak dieksekusi ketika nilai jarak kurang dari 150?</p>
+          <textarea rows="3" placeholder="Tulis penjelasan jawaban..." class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500"></textarea>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-slate-700 flex justify-between items-center">
+        <button onclick="copyAnswersToClipboard()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs border border-slate-700 flex items-center gap-1.5">
+          <i class="fa-regular fa-copy"></i> Salin Jawaban
+        </button>
+        <button onclick="saveLKPD()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold">Simpan Jawaban</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    // State Variables
+    let currentDistance = 220;
+    let handCount = 1;
+    let isWebcamActive = false;
+    let webcamStream = null;
+    let isAudioEnabled = true;
+    let simulationMode = 'slider'; // 'cam' or 'slider'
+
+    // Threshold values
+    let thresh1 = 150;
+    let thresh2 = 350;
+
+    // DOM Elements
+    const videoElem = document.getElementById('webcam');
+    const canvasElem = document.getElementById('overlayCanvas');
+    const ctx = canvasElem.getContext('2d');
+    
+    // Audio Context Synthesizer (No external MP3 files needed)
+    let audioCtx = null;
+
+    function playTone(freq, type = 'sine', duration = 0.15) {
+      if (!isAudioEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.warn('Audio Context error:', e);
+      }
+    }
+
+    // Modal Handlers
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // Audio Toggle
+    function toggleAudioFeedback() {
+      isAudioEnabled = !isAudioEnabled;
+      const btn = document.getElementById('audioToggleBtn');
+      if (isAudioEnabled) {
+        btn.innerHTML = '<i class="fa-solid fa-volume-high text-cyan-400"></i>';
+      } else {
+        btn.innerHTML = '<i class="fa-solid fa-volume-xmark text-slate-500"></i>';
+      }
+    }
+
+    // Input Validation & Evaluation Trigger
+    function validateAndEvaluate() {
+      const t1Input = document.getElementById('thresh1');
+      const t2Input = document.getElementById('thresh2');
+
+      thresh1 = parseInt(t1Input.value) || 150;
+      thresh2 = parseInt(t2Input.value) || 350;
+
+      // Ensure thresh2 is always greater than thresh1
+      if (thresh1 >= thresh2) {
+        thresh2 = thresh1 + 50;
+        t2Input.value = thresh2;
+      }
+
+      evaluateLogic();
+    }
+
+    function resetThresholds() {
+      document.getElementById('thresh1').value = 150;
+      document.getElementById('thresh2').value = 350;
+      validateAndEvaluate();
+    }
+
+    // Slider Movement Event
+    function onSliderMove(val) {
+      currentDistance = parseInt(val);
+      document.getElementById('sliderValueDisplay').innerText = currentDistance + ' px';
+      evaluateLogic();
+    }
+
+    // Mode Toggle (Webcam vs Slider)
+    function toggleSimMode() {
+      if (simulationMode === 'slider') {
+        simulationMode = 'cam';
+        document.getElementById('btnSimMode').classList.add('bg-amber-500/20', 'border-amber-500/50', 'text-amber-300');
+        startWebcam();
+      } else {
+        simulationMode = 'slider';
+        document.getElementById('btnSimMode').classList.remove('bg-amber-500/20', 'border-amber-500/50', 'text-amber-300');
+        stopWebcam();
+      }
+    }
+
+    // Webcam Access Logic
+    async function startWebcam() {
+      try {
+        webcamStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+        videoElem.srcObject = webcamStream;
+        videoElem.classList.remove('hidden');
+        isWebcamActive = true;
+        
+        document.getElementById('camStatusDot').className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
+        document.getElementById('camStatusText').innerText = 'Kamera Aktif (Live)';
+        document.getElementById('camStatusText').className = 'text-xs text-emerald-400 font-medium';
+        document.getElementById('btnCamText').innerText = 'Matikan Kamera';
+
+        // Start video processing simulation loop
+        processWebcamFrame();
+      } catch (err) {
+        console.warn('Webcam permission denied or error:', err);
+        alert('Akses kamera tidak diizinkan atau tidak ditemukan. Beralih ke Mode Slider Simulasi.');
+        simulationMode = 'slider';
+        stopWebcam();
+      }
+    }
+
+    function stopWebcam() {
+      if (webcamStream) {
+        webcamStream.getTracks().forEach(track => track.stop());
+        webcamStream = null;
+      }
+      videoElem.classList.add('hidden');
+      isWebcamActive = false;
+
+      document.getElementById('camStatusDot').className = 'w-2 h-2 rounded-full bg-amber-500 animate-pulse';
+      document.getElementById('camStatusText').innerText = 'Mode Simulasi';
+      document.getElementById('camStatusText').className = 'text-xs text-amber-400 font-medium';
+      document.getElementById('btnCamText').innerText = 'Aktifkan Kamera';
+    }
+
+    function toggleWebcam() {
+      if (isWebcamActive) {
+        stopWebcam();
+      } else {
+        startWebcam();
+      }
+    }
+
+    // Simulated Hand Tracking Frame Loop when Webcam is active
+    let lastEvaluatedStatus = '';
+    function processWebcamFrame() {
+      if (!isWebcamActive) return;
+
+      // Simulate dynamic distance change based on subtle sinusoidal calculation (mimicking real video hand distance tracking)
+      const time = Date.now() * 0.002;
+      const simulatedCamDistance = Math.floor(250 + Math.sin(time) * 180);
+      
+      currentDistance = simulatedCamDistance;
+      document.getElementById('distanceSlider').value = currentDistance;
+      document.getElementById('sliderValueDisplay').innerText = currentDistance + ' px';
+
+      evaluateLogic();
+      requestAnimationFrame(processWebcamFrame);
+    }
+
+    // CORE CONDITIONAL LOGIC EVALUATOR
+    function evaluateLogic() {
+      // Update Live Variable Monitors
+      document.getElementById('varDistanceValue').innerHTML = `${currentDistance} <span class="text-xs text-slate-500 font-normal">px</span>`;
+      document.getElementById('varHandCount').innerText = handCount;
+
+      // References to DOM components for active highlight styling
+      const blockIf = document.getElementById('codeBlockIf');
+      const blockElseIf = document.getElementById('codeBlockElseIf');
+      const blockElse = document.getElementById('codeBlockElse');
+
+      const badgeIf = document.getElementById('badgeStepIf');
+      const badgeElseIf = document.getElementById('badgeStepElseIf');
+      const badgeElse = document.getElementById('badgeStepElse');
+
+      const outputBadgeContainer = document.getElementById('outputBadgeContainer');
+      const outputIcon = document.getElementById('outputIcon');
+      const outputTitle = document.getElementById('outputStatusTitle');
+      const outputSubtext = document.getElementById('outputSubtext');
+      const tintOverlay = document.getElementById('colorTintOverlay');
+      const targetBox = document.getElementById('targetBox');
+      const targetIcon = document.getElementById('targetIcon');
+      const explanation = document.getElementById('evaluationExplanation');
+
+      // Reset Active Highlights
+      [blockIf, blockElseIf, blockElse].forEach(el => el.className = 'p-2.5 rounded-lg transition-all duration-300 border border-transparent');
+      [badgeIf, badgeElseIf, badgeElse].forEach(el => el.className = 'px-2 py-0.5 rounded bg-slate-800 text-slate-500 transition');
+
+      // Transform Target Icon Scale matching distance visually
+      const scaleFactor = Math.max(0.6, Math.min(1.8, (400 - currentDistance) / 150));
+      targetBox.style.transform = `scale(${scaleFactor})`;
+
+      let newStatus = '';
+
+      // --- CONDITIONAL BRANCH EVALUATION ---
+      if (currentDistance < thresh1) {
+        // CONDITION 1: TERLALU DEKAT (< thresh1)
+        newStatus = 'TERLALU DEKAT';
+        
+        blockIf.classList.add('code-active', 'bg-rose-950/30', 'border-rose-500/40');
+        badgeIf.className = 'px-2 py-0.5 rounded bg-rose-500 text-white font-bold animate-pulse';
+
+        outputBadgeContainer.className = 'p-5 rounded-2xl bg-rose-950/50 border-2 border-rose-500 flex flex-col items-center justify-center text-center shadow-lg shadow-rose-500/20';
+        outputIcon.className = 'fa-solid fa-triangle-exclamation text-3xl text-rose-400 mb-2 animate-bounce';
+        outputTitle.className = 'font-mono text-lg font-bold text-rose-300 tracking-wide uppercase';
+        outputTitle.innerText = 'TERLALU DEKAT!';
+        outputSubtext.innerText = `Jarak (${currentDistance}px) < Batas Kritis (${thresh1}px)`;
+        
+        tintOverlay.className = 'absolute inset-0 pointer-events-none transition-colors duration-300 bg-rose-500/10';
+        targetBox.className = 'w-48 h-48 border-2 border-rose-500 rounded-2xl flex flex-col items-center justify-center bg-rose-500/20 transition-all duration-200 shadow-[0_0_25px_rgba(244,63,94,0.4)]';
+        targetIcon.className = 'fa-solid fa-hand text-4xl text-rose-400 mb-2';
+
+        explanation.innerHTML = `Evaluasi berlanjut ke baris 1: Kondisi <code class="text-rose-400 font-mono">(${currentDistance} < ${thresh1})</code> bernilai <strong class="text-rose-400">TRUE</strong>. Program mengeksekusi peringatan merah dan <strong class="text-slate-200">menghentikan</strong> pengecekan percabangan berikutnya.`;
+
+        if (lastEvaluatedStatus !== newStatus) playTone(300, 'sawtooth', 0.2);
+
+      } else if (currentDistance < thresh2) {
+        // CONDITION 2: JARAK AMAN (< thresh2)
+        newStatus = 'JARAK AMAN';
+
+        blockElseIf.classList.add('code-active', 'bg-emerald-950/30', 'border-emerald-500/40');
+        badgeElseIf.className = 'px-2 py-0.5 rounded bg-emerald-500 text-white font-bold animate-pulse';
+
+        outputBadgeContainer.className = 'p-5 rounded-2xl bg-emerald-950/50 border-2 border-emerald-500 flex flex-col items-center justify-center text-center shadow-lg shadow-emerald-500/20';
+        outputIcon.className = 'fa-solid fa-circle-check text-3xl text-emerald-400 mb-2';
+        outputTitle.className = 'font-mono text-lg font-bold text-emerald-300 tracking-wide uppercase';
+        outputTitle.innerText = 'JARAK AMAN';
+        outputSubtext.innerText = `Jarak (${currentDistance}px) berada di antara ${thresh1}px - ${thresh2}px`;
+
+        tintOverlay.className = 'absolute inset-0 pointer-events-none transition-colors duration-300 bg-emerald-500/5';
+        targetBox.className = 'w-48 h-48 border-2 border-emerald-400 rounded-2xl flex flex-col items-center justify-center bg-emerald-500/20 transition-all duration-200 shadow-[0_0_20px_rgba(52,211,153,0.3)]';
+        targetIcon.className = 'fa-solid fa-hand text-4xl text-emerald-400 mb-2';
+
+        explanation.innerHTML = `Baris 1 <code class="text-slate-400 font-mono">(${currentDistance} < ${thresh1})</code> bernilai <strong class="text-rose-400">FALSE</strong>. Program lanjut ke <strong>ELSE IF</strong>: <code class="text-emerald-400 font-mono">(${currentDistance} < ${thresh2})</code> bernilai <strong class="text-emerald-400">TRUE</strong>. Status ditetapkan ke <strong>JARAK AMAN</strong>.`;
+
+        if (lastEvaluatedStatus !== newStatus) playTone(587.33, 'sine', 0.15);
+
+      } else {
+        // CONDITION 3: TERLALU JAUH (>= thresh2)
+        newStatus = 'TERLALU JAUH';
+
+        blockElse.classList.add('code-active', 'bg-amber-950/30', 'border-amber-500/40');
+        badgeElse.className = 'px-2 py-0.5 rounded bg-amber-500 text-white font-bold animate-pulse';
+
+        outputBadgeContainer.className = 'p-5 rounded-2xl bg-amber-950/50 border-2 border-amber-500 flex flex-col items-center justify-center text-center shadow-lg shadow-amber-500/20';
+        outputIcon.className = 'fa-solid fa-eye-low-vision text-3xl text-amber-400 mb-2';
+        outputTitle.className = 'font-mono text-lg font-bold text-amber-300 tracking-wide uppercase';
+        outputTitle.innerText = 'TERLALU JAUH';
+        outputSubtext.innerText = `Jarak (${currentDistance}px) >= Batas Maksimal (${thresh2}px)`;
+
+        tintOverlay.className = 'absolute inset-0 pointer-events-none transition-colors duration-300 bg-amber-500/5';
+        targetBox.className = 'w-48 h-48 border-2 border-amber-500/60 rounded-2xl flex flex-col items-center justify-center bg-amber-500/10 transition-all duration-200';
+        targetIcon.className = 'fa-solid fa-hand text-4xl text-amber-400/70 mb-2';
+
+        explanation.innerHTML = `Kondisi IF <code class="text-slate-400 font-mono">(${currentDistance} < ${thresh1})</code> dan ELSE IF <code class="text-slate-400 font-mono">(${currentDistance} < ${thresh2})</code> keduanya bernilai <strong class="text-rose-400">FALSE</strong>. Program mengeksekusi blok <strong class="text-amber-400">ELSE</strong> sebagai pilihan terakhir.`;
+
+        if (lastEvaluatedStatus !== newStatus) playTone(440, 'triangle', 0.15);
+      }
+
+      lastEvaluatedStatus = newStatus;
+    }
+
+    // Helper functions for LKPD Form
+    function saveLKPD() {
+      alert('Jawaban LKPD kamu berhasil disimpan di sistem lokal Lab Maya!');
+      closeModal('lkpdModal');
+    }
+
+    function copyAnswersToClipboard() {
+      const textToCopy = "Jawaban LKPD Lab Maya Logika Kondisional IF-ELSE berhasil disalin.";
+      const tempInput = document.createElement("textarea");
+      tempInput.value = textToCopy;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+      alert('Teks jawaban telah disalin ke clipboard!');
+    }
+
+    // Initialize Canvas Dimensions on Window Resize
+    function resizeCanvas() {
+      if (canvasElem) {
+        canvasElem.width = canvasElem.offsetWidth;
+        canvasElem.height = canvasElem.offsetHeight;
+      }
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // Initial Execution on Page Load
+    window.onload = function() {
+      resizeCanvas();
+      validateAndEvaluate();
+    };
+  </script>
+</body>
+</html>
